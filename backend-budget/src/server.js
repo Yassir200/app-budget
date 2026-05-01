@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 
 // configuration des middlewares
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://monbudget.dev'],
     credentials: true
 }));
 app.use(express.json());
@@ -25,6 +25,7 @@ const routesTransactions = require('./routes/transactions');
 const routesStatistiques = require('./routes/statistiques');
 
 
+// utilisation des routes
 // utilisation des routes
 app.use('/api/utilisateurs', routesUtilisateurs);
 app.use('/api/categories', routesCategories);

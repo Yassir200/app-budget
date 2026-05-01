@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // configuration d'axios
 const api = axios.create({
-  baseURL: '/api', 
+  baseURL: 'http://localhost:3000/api', 
 });
 
 // intercepteur pour attacher le token JWT aux requetes
