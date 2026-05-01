@@ -1,31 +1,50 @@
 import axios from 'axios';
 
-// configuration d'axios
+// ==========================================
+// CONFIGURATION DE L'INSTANCE AXIOS
+// ==========================================
+// La baseURL '/api' est stratégique : 
+// - En local : le proxy Vite intercepte '/api' et le redirige vers localhost:3000
+// - En production : DigitalOcean intercepte '/api' et le redirige vers le backend
 const api = axios.create({
-  baseURL: '/api', // <-- LA CORRECTION EST ICI
+  baseURL: '/api', 
 });
 
-// intercepteur pour attacher le token JWT aux requetes
+// ==========================================
+// INTERCEPTEUR DE REQUÊTE (Aller)
+// ==========================================
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
+    // Attache le token JWT dans les en-têtes de sécurité
     config.headers.Authorization = `Bearer ${token}`; 
   }
   return config;
 });
-// 💡 NOUVEAU : Intercepteur de RÉPONSE (Pour gérer les comptes supprimés/tokens expirés)
+
+// ==========================================
+// INTERCEPTEUR DE RÉPONSE (Retour)
+// ==========================================
 api.interceptors.response.use(
-  (response) => response, // Si tout va bien, on renvoie la réponse normalement
+  (response) => {
+    // Si la requête réussit, on renvoie simplement la réponse
+    return response;
+  },
   (error) => {
-    // Si le backend renvoie une erreur 401 (Non Autorisé / Utilisateur supprimé)
+    // Gestion globale des erreurs d'authentification (401 Non Autorisé)
+    // Se déclenche si le token est expiré, invalide, ou si le compte est supprimé
     if (error.response && error.response.status === 401) {
-      console.warn("Session expirée ou compte supprimé. Déconnexion forcée.");
-      // On nettoie les traces
+      console.warn("Session expirée ou compte non autorisé. Déconnexion forcée.");
+      
+      // 1. Nettoyage sécurisé du navigateur
       localStorage.removeItem('token');
       localStorage.removeItem('utilisateur');
-      // On redirige violemment vers le Login
+      
+      // 2. Redirection de sécurité vers la page de connexion
       window.location.href = '/Login'; 
     }
+    
+    // Pour les autres erreurs (400, 404, 500), on les renvoie au composant
     return Promise.reject(error);
   }
 );
