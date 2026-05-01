@@ -5,6 +5,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { LayoutDashboard, Tag, Wallet, PlusCircle, ArrowDownRight, ArrowUpRight, Calendar, ArrowRightLeft, Download, Sun, Moon, Globe, ChevronDown } from 'lucide-react';
 import api from '../services/api';
 import Sidebar from '../components/Sidebar';
+import WelcomeOnboarding from '../components/WelcomeOnboarding';
 import { useTheme } from '../context/ThemeContext';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -222,214 +223,217 @@ function Dashboard() {
   if (loading) return <div className="flex h-screen items-center justify-center bg-[#f4f7fb] dark:bg-slate-900 dark:text-white transition-colors duration-300">Chargement...</div>;
 
   return (
-    <div className="h-screen overflow-hidden bg-[#f4f7fb] dark:bg-slate-900 flex font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
-      <Sidebar />
+    <>
+      <WelcomeOnboarding onComplete={fetchDashboardData} />
+      <div className="h-screen overflow-hidden bg-[#f4f7fb] dark:bg-slate-900 flex font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
+        <Sidebar />
 
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <header className="h-20 shrink-0 px-8 flex justify-between items-center bg-[#f4f7fb] dark:bg-slate-900 transition-colors duration-300">
-          
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/Transactions')} className="bg-slate-900 dark:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm hover:bg-slate-800 dark:hover:bg-blue-700 transition">
-              <PlusCircle size={16} /> {t('header.add', 'Ajouter')}
-            </button>
-
-            <div className="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden transition-colors">
-              <div className="px-3 border-r border-slate-200 dark:border-slate-700">
-                <input type="month" value={reportMonth} onChange={(e) => setReportMonth(e.target.value)} className="bg-transparent border-none text-sm font-bold text-slate-700 dark:text-slate-200 outline-none py-2 cursor-pointer" />
-              </div>
-              <button onClick={genererRapportMensuel} className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold text-sm transition-colors" title="Générer le rapport">
-                <Download size={16} /> Rapport
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
+          <header className="h-20 shrink-0 px-8 flex justify-between items-center bg-[#f4f7fb] dark:bg-slate-900 transition-colors duration-300">
             
-            {/* 🌐 LANGUAGE SWITCHER */}
-            <div className="relative">
-              <button 
-                onClick={() => setIsLangOpen(!isLangOpen)}
-                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-bold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
-              >
-                <Globe size={16} className="text-slate-500 dark:text-slate-400" />
-                <span className="text-sm font-bold uppercase">{currentLangObj.flag}</span>
-                <ChevronDown size={14} className={`text-slate-400 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} />
+            <div className="flex items-center gap-4">
+              <button onClick={() => navigate('/Transactions')} className="bg-slate-900 dark:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm hover:bg-slate-800 dark:hover:bg-blue-700 transition">
+                <PlusCircle size={16} /> {t('header.add', 'Ajouter')}
               </button>
 
-              {isLangOpen && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setIsLangOpen(false)}></div>
-                  <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-lg rounded-2xl overflow-hidden z-20 animate-fade-in py-1">
-                    {languages.map((lng) => (
-                      <button
-                        key={lng.code}
-                        onClick={() => {
-                          i18n.changeLanguage(lng.code); 
-                          setIsLangOpen(false);
-                        }}
-                        className={`w-full flex items-center gap-3 px-4 py-2 text-sm font-bold transition-colors ${
-                          currentLangObj.code === lng.code 
-                            ? 'bg-slate-50 dark:bg-slate-700/50 text-blue-600 dark:text-blue-400' 
-                            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
-                        }`}
-                      >
-                        <span className="text-sm font-extrabold text-slate-400">{lng.flag}</span>
-                        <span>{lng.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </>
+              <div className="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden transition-colors">
+                <div className="px-3 border-r border-slate-200 dark:border-slate-700">
+                  <input type="month" value={reportMonth} onChange={(e) => setReportMonth(e.target.value)} className="bg-transparent border-none text-sm font-bold text-slate-700 dark:text-slate-200 outline-none py-2 cursor-pointer" />
+                </div>
+                <button onClick={genererRapportMensuel} className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold text-sm transition-colors" title="Générer le rapport">
+                  <Download size={16} /> Rapport
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              
+              {/* 🌐 LANGUAGE SWITCHER */}
+              <div className="relative">
+                <button 
+                  onClick={() => setIsLangOpen(!isLangOpen)}
+                  className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-bold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
+                >
+                  <Globe size={16} className="text-slate-500 dark:text-slate-400" />
+                  <span className="text-sm font-bold uppercase">{currentLangObj.flag}</span>
+                  <ChevronDown size={14} className={`text-slate-400 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isLangOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setIsLangOpen(false)}></div>
+                    <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-lg rounded-2xl overflow-hidden z-20 animate-fade-in py-1">
+                      {languages.map((lng) => (
+                        <button
+                          key={lng.code}
+                          onClick={() => {
+                            i18n.changeLanguage(lng.code); 
+                            setIsLangOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-3 px-4 py-2 text-sm font-bold transition-colors ${
+                            currentLangObj.code === lng.code 
+                              ? 'bg-slate-50 dark:bg-slate-700/50 text-blue-600 dark:text-blue-400' 
+                              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                          }`}
+                        >
+                          <span className="text-sm font-extrabold text-slate-400">{lng.flag}</span>
+                          <span>{lng.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* 🌙 DARK MODE TOGGLE */}
+              <div onClick={toggleDarkMode} className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-bold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
+                <span className="text-sm hidden sm:block">{t('header.darkMode', 'Mode Sombre')}</span>
+                {isDarkMode ? <Sun size={18} className="text-amber-500" /> : <Moon size={18} className="text-indigo-500" />}
+              </div>
+
+            </div>
+          </header>
+
+          <div className="flex-1 px-8 pb-6 max-w-[1600px] w-full mx-auto overflow-hidden flex flex-col min-h-0">
+            <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors duration-300">
+              <div className="flex gap-1 overflow-x-auto w-full md:w-auto p-1">
+                {['day', 'week', 'month', 'year', 'all'].map((filter) => {
+                  // 💡 CORRECTION DU BUG ICI : 'day' pointe vers la clé 'today' du JSON
+                  const jsonKey = filter === 'day' ? 'today' : filter;
+                  const fallbackTxt = filter === 'day' ? "Aujourd'hui" : filter === 'week' ? 'Semaine' : filter === 'month' ? 'Ce mois' : filter === 'year' ? 'Cette année' : 'Tout';
+                  
+                  return (
+                    <button key={filter} onClick={() => { setTimeFilter(filter); setShowCustomPicker(false); }} className={`px-4 py-2 rounded-xl text-sm font-bold capitalize transition-all ${timeFilter === filter ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'}`}>
+                      {t(`filters.${jsonKey}`, fallbackTxt)} 
+                    </button>
+                  )
+                })}
+                <button onClick={() => { setTimeFilter('custom'); setShowCustomPicker(true); }} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${timeFilter === 'custom' ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'}`}>
+                  <Calendar size={16} /> {t('filters.custom', 'Personnalisée')}
+                </button>
+              </div>
+
+              {showCustomPicker && (
+                <div className="flex items-center gap-3 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 rounded-xl animate-fade-in transition-colors">
+                  <span className="text-sm font-bold text-indigo-800 dark:text-indigo-300">Du:</span>
+                  <input type="date" value={customDates.start} onChange={(e) => setCustomDates({ ...customDates, start: e.target.value })} className="bg-white dark:bg-slate-700 border-none rounded-lg px-2 py-1 text-sm outline-none text-slate-700 dark:text-slate-200 shadow-sm" />
+                  <span className="text-sm font-bold text-indigo-800 dark:text-indigo-300 ml-2">Au:</span>
+                  <input type="date" value={customDates.end} onChange={(e) => setCustomDates({ ...customDates, end: e.target.value })} className="bg-white dark:bg-slate-700 border-none rounded-lg px-2 py-1 text-sm outline-none text-slate-700 dark:text-slate-200 shadow-sm" />
+                </div>
               )}
             </div>
 
-            {/* 🌙 DARK MODE TOGGLE */}
-            <div onClick={toggleDarkMode} className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-bold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
-              <span className="text-sm hidden sm:block">{t('header.darkMode', 'Mode Sombre')}</span>
-              {isDarkMode ? <Sun size={18} className="text-amber-500" /> : <Moon size={18} className="text-indigo-500" />}
-            </div>
-
-          </div>
-        </header>
-
-        <div className="flex-1 px-8 pb-6 max-w-[1600px] w-full mx-auto overflow-hidden flex flex-col min-h-0">
-          <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors duration-300">
-            <div className="flex gap-1 overflow-x-auto w-full md:w-auto p-1">
-              {['day', 'week', 'month', 'year', 'all'].map((filter) => {
-                // 💡 CORRECTION DU BUG ICI : 'day' pointe vers la clé 'today' du JSON
-                const jsonKey = filter === 'day' ? 'today' : filter;
-                const fallbackTxt = filter === 'day' ? "Aujourd'hui" : filter === 'week' ? 'Semaine' : filter === 'month' ? 'Ce mois' : filter === 'year' ? 'Cette année' : 'Tout';
-                
-                return (
-                  <button key={filter} onClick={() => { setTimeFilter(filter); setShowCustomPicker(false); }} className={`px-4 py-2 rounded-xl text-sm font-bold capitalize transition-all ${timeFilter === filter ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'}`}>
-                    {t(`filters.${jsonKey}`, fallbackTxt)} 
-                  </button>
-                )
-              })}
-              <button onClick={() => { setTimeFilter('custom'); setShowCustomPicker(true); }} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${timeFilter === 'custom' ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'}`}>
-                <Calendar size={16} /> {t('filters.custom', 'Personnalisée')}
-              </button>
-            </div>
-
-            {showCustomPicker && (
-              <div className="flex items-center gap-3 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 rounded-xl animate-fade-in transition-colors">
-                <span className="text-sm font-bold text-indigo-800 dark:text-indigo-300">Du:</span>
-                <input type="date" value={customDates.start} onChange={(e) => setCustomDates({ ...customDates, start: e.target.value })} className="bg-white dark:bg-slate-700 border-none rounded-lg px-2 py-1 text-sm outline-none text-slate-700 dark:text-slate-200 shadow-sm" />
-                <span className="text-sm font-bold text-indigo-800 dark:text-indigo-300 ml-2">Au:</span>
-                <input type="date" value={customDates.end} onChange={(e) => setCustomDates({ ...customDates, end: e.target.value })} className="bg-white dark:bg-slate-700 border-none rounded-lg px-2 py-1 text-sm outline-none text-slate-700 dark:text-slate-200 shadow-sm" />
-              </div>
-            )}
-          </div>
-
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
-            
-            {/* stats revenus */}
-            <div className="flex flex-col gap-4 min-h-0">
-              <div className="shrink-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.income', 'Revenus')}</h3>
-                </div>
-                <div className="relative h-40 flex justify-center">
-                  <Doughnut data={doughnutRevenus} options={optionsDoughnut} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-xl font-bold text-emerald-500 dark:text-emerald-400 w-full px-4 text-center truncate" title={formatDevise(totalRevenus)}>{formatDeviseCompact(totalRevenus)} 
-                    </span>
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
+              
+              {/* stats revenus */}
+              <div className="flex flex-col gap-4 min-h-0">
+                <div className="shrink-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.income', 'Revenus')}</h3>
                   </div>
-                </div>
-              </div>
-
-              {/* DETAILS REVENUS */}
-              <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
-                <div className="shrink-0 flex justify-between items-center mb-4"><h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.incomeDetails', 'Détails Revenus')}</h3></div>
-                <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-4">
-                  {revenusData.map((cat, idx) => {
-                    const pct = totalRevenus > 0 ? Math.round((cat.total / totalRevenus) * 100) : 0;
-                    return (
-                      <div key={idx}>
-                        <div className="flex justify-between text-sm mb-1"><span className="font-bold text-slate-700 dark:text-slate-300">{cat.nom}</span><span className="text-slate-500 dark:text-slate-400">{pct}%</span></div>
-                        <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5"><div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: cat.couleur }}></div></div>
-                      </div>
-                    );
-                  })}
-                  {revenusData.length === 0 && <p className="text-sm text-slate-400 dark:text-slate-500 italic">{t('dashboard.empty', 'Aucune transaction.')}</p>}
-                </div>
-              </div>
-            </div>
-
-            {/* stats depenses */}
-            <div className="flex flex-col gap-4 min-h-0">
-              <div className="shrink-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.expenses', 'Dépenses')}</h3>
-                </div>
-                <div className="relative h-40 flex justify-center">
-                  <Doughnut data={doughnutDepenses} options={optionsDoughnut} />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-xl font-bold text-rose-500 dark:text-rose-400 w-full px-4 text-center truncate" title={formatDevise(totalDepenses)}>{formatDeviseCompact(totalDepenses)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* DETAILS DEPENSES */}
-              <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
-                <div className="shrink-0 flex justify-between items-center mb-4"><h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.expensesDetails', 'Détails Dépenses')}</h3></div>
-                <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-4">
-                  {depensesData.map((cat, idx) => {
-                    const pct = totalDepenses > 0 ? Math.round((cat.total / totalDepenses) * 100) : 0;
-                    return (
-                      <div key={idx}>
-                        <div className="flex justify-between text-sm mb-1"><span className="font-bold text-slate-700 dark:text-slate-300">{cat.nom}</span><span className="text-slate-500 dark:text-slate-400">{pct}%</span></div>
-                        <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5"><div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: cat.couleur }}></div></div>
-                      </div>
-                    );
-                  })}
-                  {depensesData.length === 0 && <p className="text-sm text-slate-400 dark:text-slate-500 italic">{t('dashboard.empty', 'Aucune transaction.')}</p>}
-                </div>
-              </div>
-            </div>
-
-            {/* solde global et liste des transactions */}
-            <div className="flex flex-col gap-4 min-h-0">
-              <div className="shrink-0 grid grid-cols-2 gap-3">
-                <div className="bg-gradient-to-br from-rose-400 to-rose-500 p-4 rounded-3xl text-white shadow-md shadow-rose-200 dark:shadow-none">
-                  <p className="text-[11px] opacity-90 mb-1 uppercase tracking-wide">{t('dashboard.expenses', 'Dépenses')}</p>
-                  <div className="flex items-center justify-between"><span className="text-lg font-bold">{formatDevise(totalDepenses)}</span><ArrowDownRight size={16} className="opacity-80" /></div>
-                </div>
-                <div className="bg-gradient-to-br from-emerald-400 to-emerald-500 p-4 rounded-3xl text-white shadow-md shadow-emerald-200 dark:shadow-none">
-                  <p className="text-[11px] opacity-90 mb-1 uppercase tracking-wide">{t('dashboard.income', 'Revenus')}</p>
-                  <div className="flex items-center justify-between"><span className="text-lg font-bold">{formatDevise(totalRevenus)}</span><ArrowUpRight size={16} className="opacity-80" /></div>
-                </div>
-                <div className="bg-gradient-to-br from-orange-400 to-orange-500 p-4 rounded-3xl text-white shadow-md shadow-orange-200 dark:shadow-none col-span-2">
-                  <p className="text-[17px] opacity-90 mb-1 uppercase tracking-wide">{t('dashboard.balance', 'Solde Global')}</p>
-                  <div className="flex items-center justify-between"><span className="text-2xl font-bold">{formatDevise(soldeGlobal)}</span></div>
-                </div>
-              </div>
-
-              <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
-                <div className="shrink-0 flex justify-between items-center mb-4">
-                  <h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.transactions', 'Transactions')}</h3>
-                  <span onClick={() => navigate('/Transactions')} className="text-xs font-bold text-blue-500 dark:text-blue-400 cursor-pointer hover:underline">{t('dashboard.seeAll', 'Voir tout')}</span>
-                </div>
-                <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-3">
-                  {filteredTransactions.slice(0, 200).map((tx) => (
-                    <div key={tx._id} className="flex justify-between items-center border-b border-slate-50 dark:border-slate-700/50 pb-2.5 last:border-0 last:pb-0">
-                      <div>
-                        <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-tight">{tx.titre}</h4>
-                        <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{tx.categorie?.nom || 'Général'} • {formaterDateCourte(tx.date)}</p>
-                      </div>
-                      <span className={`text-sm font-bold ${tx.type === 'revenu' ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'}`}>
-                        {tx.type === 'revenu' ? '+' : '-'}{formatDevise(tx.montant)}
+                  <div className="relative h-40 flex justify-center">
+                    <Doughnut data={doughnutRevenus} options={optionsDoughnut} />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-xl font-bold text-emerald-500 dark:text-emerald-400 w-full px-4 text-center truncate" title={formatDevise(totalRevenus)}>{formatDeviseCompact(totalRevenus)} 
                       </span>
                     </div>
-                  ))}
-                  {filteredTransactions.length === 0 && <p className="text-sm text-slate-400 dark:text-slate-500 italic">{t('dashboard.empty', 'Aucune transaction.')}</p>}
+                  </div>
+                </div>
+
+                {/* DETAILS REVENUS */}
+                <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
+                  <div className="shrink-0 flex justify-between items-center mb-4"><h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.incomeDetails', 'Détails Revenus')}</h3></div>
+                  <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-4">
+                    {revenusData.map((cat, idx) => {
+                      const pct = totalRevenus > 0 ? Math.round((cat.total / totalRevenus) * 100) : 0;
+                      return (
+                        <div key={idx}>
+                          <div className="flex justify-between text-sm mb-1"><span className="font-bold text-slate-700 dark:text-slate-300">{cat.nom}</span><span className="text-slate-500 dark:text-slate-400">{pct}%</span></div>
+                          <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5"><div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: cat.couleur }}></div></div>
+                        </div>
+                      );
+                    })}
+                    {revenusData.length === 0 && <p className="text-sm text-slate-400 dark:text-slate-500 italic">{t('dashboard.empty', 'Aucune transaction.')}</p>}
+                  </div>
+                </div>
+              </div>
+
+              {/* stats depenses */}
+              <div className="flex flex-col gap-4 min-h-0">
+                <div className="shrink-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.expenses', 'Dépenses')}</h3>
+                  </div>
+                  <div className="relative h-40 flex justify-center">
+                    <Doughnut data={doughnutDepenses} options={optionsDoughnut} />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-xl font-bold text-rose-500 dark:text-rose-400 w-full px-4 text-center truncate" title={formatDevise(totalDepenses)}>{formatDeviseCompact(totalDepenses)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* DETAILS DEPENSES */}
+                <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
+                  <div className="shrink-0 flex justify-between items-center mb-4"><h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.expensesDetails', 'Détails Dépenses')}</h3></div>
+                  <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-4">
+                    {depensesData.map((cat, idx) => {
+                      const pct = totalDepenses > 0 ? Math.round((cat.total / totalDepenses) * 100) : 0;
+                      return (
+                        <div key={idx}>
+                          <div className="flex justify-between text-sm mb-1"><span className="font-bold text-slate-700 dark:text-slate-300">{cat.nom}</span><span className="text-slate-500 dark:text-slate-400">{pct}%</span></div>
+                          <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-1.5"><div className="h-1.5 rounded-full" style={{ width: `${pct}%`, backgroundColor: cat.couleur }}></div></div>
+                        </div>
+                      );
+                    })}
+                    {depensesData.length === 0 && <p className="text-sm text-slate-400 dark:text-slate-500 italic">{t('dashboard.empty', 'Aucune transaction.')}</p>}
+                  </div>
+                </div>
+              </div>
+
+              {/* solde global et liste des transactions */}
+              <div className="flex flex-col gap-4 min-h-0">
+                <div className="shrink-0 grid grid-cols-2 gap-3">
+                  <div className="bg-gradient-to-br from-rose-400 to-rose-500 p-4 rounded-3xl text-white shadow-md shadow-rose-200 dark:shadow-none">
+                    <p className="text-[11px] opacity-90 mb-1 uppercase tracking-wide">{t('dashboard.expenses', 'Dépenses')}</p>
+                    <div className="flex items-center justify-between"><span className="text-lg font-bold">{formatDevise(totalDepenses)}</span><ArrowDownRight size={16} className="opacity-80" /></div>
+                  </div>
+                  <div className="bg-gradient-to-br from-emerald-400 to-emerald-500 p-4 rounded-3xl text-white shadow-md shadow-emerald-200 dark:shadow-none">
+                    <p className="text-[11px] opacity-90 mb-1 uppercase tracking-wide">{t('dashboard.income', 'Revenus')}</p>
+                    <div className="flex items-center justify-between"><span className="text-lg font-bold">{formatDevise(totalRevenus)}</span><ArrowUpRight size={16} className="opacity-80" /></div>
+                  </div>
+                  <div className="bg-gradient-to-br from-orange-400 to-orange-500 p-4 rounded-3xl text-white shadow-md shadow-orange-200 dark:shadow-none col-span-2">
+                    <p className="text-[17px] opacity-90 mb-1 uppercase tracking-wide">{t('dashboard.balance', 'Solde Global')}</p>
+                    <div className="flex items-center justify-between"><span className="text-2xl font-bold">{formatDevise(soldeGlobal)}</span></div>
+                  </div>
+                </div>
+
+                <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
+                  <div className="shrink-0 flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.transactions', 'Transactions')}</h3>
+                    <span onClick={() => navigate('/Transactions')} className="text-xs font-bold text-blue-500 dark:text-blue-400 cursor-pointer hover:underline">{t('dashboard.seeAll', 'Voir tout')}</span>
+                  </div>
+                  <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-3">
+                    {filteredTransactions.slice(0, 200).map((tx) => (
+                      <div key={tx._id} className="flex justify-between items-center border-b border-slate-50 dark:border-slate-700/50 pb-2.5 last:border-0 last:pb-0">
+                        <div>
+                          <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-tight">{tx.titre}</h4>
+                          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{tx.categorie?.nom || 'Général'} • {formaterDateCourte(tx.date)}</p>
+                        </div>
+                        <span className={`text-sm font-bold ${tx.type === 'revenu' ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'}`}>
+                          {tx.type === 'revenu' ? '+' : '-'}{formatDevise(tx.montant)}
+                        </span>
+                      </div>
+                    ))}
+                    {filteredTransactions.length === 0 && <p className="text-sm text-slate-400 dark:text-slate-500 italic">{t('dashboard.empty', 'Aucune transaction.')}</p>}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
