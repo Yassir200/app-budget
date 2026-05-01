@@ -25,16 +25,12 @@ const routesTransactions = require('./routes/transactions');
 const routesStatistiques = require('./routes/statistiques');
 
 
-// utilisation des routes
-// utilisation des routes
-app.use('/api/utilisateurs', routesUtilisateurs);
-app.use('/api/categories', routesCategories);
-app.use('/api/transactions', routesTransactions);
-app.use('/api/statistiques', routesStatistiques);
+app.use('/utilisateurs', routesUtilisateurs);
+app.use('/categories', routesCategories);
+app.use('/transactions', routesTransactions);
+app.use('/statistiques', routesStatistiques);
 
-
-// route de test simple
-app.get('/api/test', (req, res) => {
+app.get('/test', (req, res) => {
   res.json({ message: 'Serveur marche bien' });
 });
 
