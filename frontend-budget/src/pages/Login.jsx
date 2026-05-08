@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext'; // 💡 Import de ton ThemeContext
+import { useTheme } from '../context/ThemeContext'; 
 import api from '../services/api';
 import { Mail, Lock, Wallet, ArrowRight, AlertCircle, Sun, Moon } from 'lucide-react';
 
@@ -12,7 +12,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
   
   const { login } = useContext(AuthContext);
-  const { isDarkMode, toggleDarkMode } = useTheme(); // 💡 Utilisation de ton context
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,7 +23,9 @@ function Login() {
     try {
       const response = await api.post('/utilisateurs/login', { email, motDePasse: password });
       
-      // Vérification de sécurité pour les comptes non vérifiés
+      // 💡 ON ENREGISTRE LES INFOS DONT L'AVATAR IMMÉDIATEMENT
+      localStorage.setItem('utilisateur', JSON.stringify(response.data.utilisateur));
+      
       login(response.data.token);
       navigate('/Dashboard');
     } catch (err) {
@@ -36,7 +38,6 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 font-sans p-4 transition-colors duration-500">
       
-      {/* 💡 BOUTON THEME (STYLE DASHBOARD) */}
       <button
         onClick={toggleDarkMode}
         className="fixed top-6 right-6 p-2.5 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"

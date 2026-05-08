@@ -14,12 +14,16 @@ const utilisateurSchema = new mongoose.Schema({
     nom: {
         type: String,
         required: true,
-        set: formaterNom // Formatage auto avant sauvegarde
+        set: formaterNom
     },
     email: {
         type: String,
         required: true,
         unique: true
+    },
+    avatar: {
+        type: String,
+        default: ""
     },
     motDePasse: {
         type: String,

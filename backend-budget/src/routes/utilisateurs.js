@@ -4,6 +4,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer'); 
 const dns = require('dns').promises; 
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs'); // Indispensable pour gérer les dossiers
 const verifierToken = require('../middlewares/authMiddleware');
 const Utilisateur = require('../models/Utilisateur');
 
@@ -12,29 +15,45 @@ const {
     updateProfilUtilisateur, 
     supprimerCompte, 
     motDePasseOublie, 
-    reinitialiserMotDePasse 
+    reinitialiserMotDePasse,
+    envoyerMessageSupport
 } = require('../controllers/utilisateurController');
 
-// ==========================================
-// 💡 BOUCLIER 1 : La Regex Stricte (Bloque les @yy, .cffffom, etc.)
-// ==========================================
 const emailRegexStrict = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,6}$/;
 
-// ==========================================
-// 💡 BOUCLIER 2 : Validation DNS MX (Mode SAFE / PFE)
-// ==========================================
 async function verifierDomaineEmail(email) {
     try {
         const domaine = email.split('@')[1].trim(); 
         const records = await dns.resolveMx(domaine);
         return records && records.length > 0;
     } catch (error) {
-        // En Mode Safe : Si le réseau local plante, on laisse passer par précaution.
-        // MAIS on est tranquille car le Bouclier 1 (Regex) a déjà filtré les pires erreurs !
         console.warn(`[Avertissement Réseau] Impossible de vérifier le DNS pour ${email}.`);
         return true; 
     }
 }
+
+// ==========================================
+// 💡 CONFIGURATION MULTER POUR L'AVATAR (CORRIGÉE)
+// ==========================================
+// Pointe exactement vers votre dossier "src/uploads"
+const dossierUploads = path.join(__dirname, '../uploads');
+
+// Crée le dossier s'il n'existe pas
+if (!fs.existsSync(dossierUploads)) {
+    fs.mkdirSync(dossierUploads, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, dossierUploads); // Utilisation du chemin absolu
+    },
+    filename: function (req, file, cb) {
+        // Utilisation de Date.now() pour éviter les erreurs d'ID introuvable
+        const nomUnique = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'avatar-' + nomUnique + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
 
 // ==========================================
 // ROUTES PRIVÉES
@@ -42,6 +61,24 @@ async function verifierDomaineEmail(email) {
 router.get('/me', verifierToken, getProfilUtilisateur);
 router.put('/profil', verifierToken, updateProfilUtilisateur);
 router.delete('/me', verifierToken, supprimerCompte);
+router.post('/support', verifierToken, envoyerMessageSupport);
+
+// NOUVELLE ROUTE : UPLOAD AVATAR
+router.post('/avatar', verifierToken, upload.single('avatar'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "Aucune image fournie." });
+        }
+        
+        const avatarUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+        
+        await Utilisateur.findByIdAndUpdate(req.utilisateur.id, { avatar: avatarUrl });
+        res.status(200).json({ message: "Avatar mis à jour", avatarUrl: avatarUrl });
+    } catch (erreur) {
+        console.error("🔴 ERREUR D'UPLOAD AVATAR :", erreur);
+        res.status(500).json({ message: "Erreur serveur lors de l'upload.", detail: erreur.message });
+    }
+});
 
 // ==========================================
 // ROUTES PUBLIQUES
@@ -60,15 +97,12 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: "Veuillez remplir tous les champs." });
         }
 
-        // Nettoyage des espaces cachés
         const emailNettoye = email.trim().toLowerCase();
 
-        // 🛡️ APPLICATION DU BOUCLIER 1 (Regex)
         if (!emailRegexStrict.test(emailNettoye)) {
             return res.status(400).json({ message: "Format d'email non valide." });
         }
 
-        // 🛡️ APPLICATION DU BOUCLIER 2 (DNS)
         const domaineValide = await verifierDomaineEmail(emailNettoye);
         if (!domaineValide) {
             return res.status(400).json({ message: "Le domaine de cet email n'existe pas." });
@@ -76,13 +110,10 @@ router.post('/', async (req, res) => {
 
         let utilisateur = await Utilisateur.findOne({ email: emailNettoye });
 
-        // 🛑 VÉRIFICATION SI L'EMAIL EST DÉJÀ PRIS (C'est ce qui gère ta demande)
         if (utilisateur) {
             if (utilisateur.isVerified) {
-                // Le compte existe et a été validé = On bloque tout !
                 return res.status(400).json({ message: "Cet email est déjà utilisé." });
             } else {
-                // Le compte a été créé mais jamais validé par OTP = On recycle les infos.
                 const salt = await bcrypt.genSalt(10);
                 utilisateur.motDePasse = await bcrypt.hash(motDePasse, salt);
                 utilisateur.nom = nom; 
@@ -179,15 +210,12 @@ router.post('/login', async (req, res) => {
 // ==========================================
 router.post('/demander-changement-email', verifierToken, async (req, res) => {
     try {
-        // Nettoyage des espaces cachés
         const nouvelEmail = req.body.nouvelEmail.trim().toLowerCase();
         
-        // 🛡️ APPLICATION DU BOUCLIER 1 (Regex)
         if (!emailRegexStrict.test(nouvelEmail)) {
             return res.status(400).json({ message: "Format d'email non valide." });
         }
 
-        // 🛡️ APPLICATION DU BOUCLIER 2 (DNS)
         const domaineValide = await verifierDomaineEmail(nouvelEmail);
         if (!domaineValide) {
             return res.status(400).json({ message: "Le domaine de cet email n'existe pas." });

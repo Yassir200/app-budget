@@ -248,42 +248,7 @@ function Dashboard() {
 
             <div className="flex items-center gap-3">
               
-              {/* 🌐 LANGUAGE SWITCHER */}
-              <div className="relative">
-                <button 
-                  onClick={() => setIsLangOpen(!isLangOpen)}
-                  className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-bold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
-                >
-                  <Globe size={16} className="text-slate-500 dark:text-slate-400" />
-                  <span className="text-sm font-bold uppercase">{currentLangObj.flag}</span>
-                  <ChevronDown size={14} className={`text-slate-400 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {isLangOpen && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setIsLangOpen(false)}></div>
-                    <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-lg rounded-2xl overflow-hidden z-20 animate-fade-in py-1">
-                      {languages.map((lng) => (
-                        <button
-                          key={lng.code}
-                          onClick={() => {
-                            i18n.changeLanguage(lng.code); 
-                            setIsLangOpen(false);
-                          }}
-                          className={`w-full flex items-center gap-3 px-4 py-2 text-sm font-bold transition-colors ${
-                            currentLangObj.code === lng.code 
-                              ? 'bg-slate-50 dark:bg-slate-700/50 text-blue-600 dark:text-blue-400' 
-                              : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
-                          }`}
-                        >
-                          <span className="text-sm font-extrabold text-slate-400">{lng.flag}</span>
-                          <span>{lng.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
+              
 
               {/* 🌙 DARK MODE TOGGLE */}
               <div onClick={toggleDarkMode} className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-bold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">

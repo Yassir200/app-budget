@@ -306,7 +306,13 @@ function Transactions() {
 
                     <div>
                       <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">{t('transactions.descLabel', 'Description')}</label>
-                      <textarea placeholder={t('transactions.descPlaceholder', 'Ajoutez des détails')} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition resize-none h-14 text-slate-800 dark:text-white text-sm" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+                      {/* 💡 CORRECTIONS APPORTÉES ICI : h-24, custom-scrollbar, break-all */}
+                      <textarea 
+                        placeholder={t('transactions.descPlaceholder', 'Ajoutez des détails')} 
+                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition resize-none h-24 text-slate-800 dark:text-white text-sm custom-scrollbar break-all" 
+                        value={formData.description} 
+                        onChange={(e) => setFormData({...formData, description: e.target.value})} 
+                      />
                     </div>
 
                     <button type="submit" className="mt-auto w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg text-sm">
@@ -451,7 +457,12 @@ function Transactions() {
 
                 <div>
                   <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">{t('transactions.descLabel', 'Description')}</label>
-                  <textarea className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition resize-none h-14 text-slate-800 dark:text-white text-sm" value={editingTx.description} onChange={(e) => setEditingTx({...editingTx, description: e.target.value})} />
+                  {/* 💡 CORRECTIONS APPORTÉES ICI AUSSI : h-24, custom-scrollbar, break-all */}
+                  <textarea 
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition resize-none h-24 text-slate-800 dark:text-white text-sm custom-scrollbar break-all" 
+                    value={editingTx.description} 
+                    onChange={(e) => setEditingTx({...editingTx, description: e.target.value})} 
+                  />
                 </div>
               </form>
             </div>

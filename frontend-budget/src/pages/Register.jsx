@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
-import { Mail, Lock, User, Wallet, ArrowRight, AlertCircle, CheckCircle2, KeyRound } from 'lucide-react';
+import { Mail, Lock, User, Wallet, ArrowRight, AlertCircle, CheckCircle2, KeyRound, ArrowLeft } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -76,13 +76,25 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 font-sans p-4 transition-colors duration-300">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 font-sans p-4 transition-colors duration-300 relative">
+      
+      {/* === BOUTON RETOUR À L'ACCUEIL === */}
+      <Link 
+        to="/" 
+        className="absolute top-6 left-6 md:top-8 md:left-8 flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors font-medium group"
+      >
+        <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+        <span>Accueil</span>
+      </Link>
+      {/* =================================== */}
+
       <div className="w-full max-w-md bg-white dark:bg-slate-800 p-8 sm:p-12 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700">
         
-        <div className="flex justify-center items-center gap-3 mb-8 text-blue-600 dark:text-blue-500">
+        {/* LOGO CLIQUABLE VERS L'ACCUEIL */}
+        <Link to="/" className="flex justify-center items-center gap-3 mb-8 text-blue-600 dark:text-blue-500 hover:opacity-80 transition-opacity">
           <Wallet size={36} />
           <span className="text-3xl font-extrabold text-slate-900 dark:text-white">MyBudget</span>
-        </div>
+        </Link>
 
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">

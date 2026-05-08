@@ -17,6 +17,7 @@ const getProfilUtilisateur = async (req, res) => {
             _id: utilisateur._id,
             nom: utilisateur.nom,
             email: utilisateur.email,
+            avatar: utilisateur.avatar, // 💡 AJOUT DE L'AVATAR ICI
             dateCreation: utilisateur.dateCreation
         });
     } catch (erreur) {
@@ -46,10 +47,10 @@ const updateProfilUtilisateur = async (req, res) => {
             const salt = await bcrypt.genSalt(10);
             utilisateur.motDePasse = await bcrypt.hash(req.body.nouveauMotDePasse, salt);
             
-            // 💡 Ceci invalide l'ancien token dans le authMiddleware...
+            // Ceci invalide l'ancien token dans le authMiddleware...
             utilisateur.dateModificationMotDePasse = Date.now();
 
-            // 💡 ...Donc on DOIT générer un nouveau token pour garder l'utilisateur connecté !
+            // ...Donc on DOIT générer un nouveau token pour garder l'utilisateur connecté !
             nouveauToken = jwt.sign({ id: utilisateur._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
         }
 
@@ -59,6 +60,7 @@ const updateProfilUtilisateur = async (req, res) => {
             _id: utilisateurMisAJour._id,
             nom: utilisateurMisAJour.nom,
             email: utilisateurMisAJour.email,
+            avatar: utilisateurMisAJour.avatar, // 💡 AJOUT DE L'AVATAR ICI AUSSI
             token: nouveauToken // On envoie le nouveau token au Frontend
         });
     } catch (erreur) {
@@ -89,7 +91,7 @@ const motDePasseOublie = async (req, res) => {
     try {
         const { email } = req.body;
         
-        // 💡 L'ASTUCE ICI : On nettoie l'email reçu du Frontend
+        // L'ASTUCE ICI : On nettoie l'email reçu du Frontend
         const emailNettoye = email.trim().toLowerCase();
         
         const utilisateur = await Utilisateur.findOne({ email: emailNettoye });
@@ -154,4 +156,45 @@ const reinitialiserMotDePasse = async (req, res) => {
     }
 };
 
-module.exports = { getProfilUtilisateur, updateProfilUtilisateur, supprimerCompte, motDePasseOublie, reinitialiserMotDePasse };
+// 🎧 ENVOYER UN MESSAGE AU SUPPORT
+const envoyerMessageSupport = async (req, res) => {
+    const { nom, email, telephone, message } = req.body;
+
+    try {
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.zoho.com', port: 465, secure: true, 
+            auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+        });
+
+        await transporter.sendMail({
+            from: `"Support MyBudget" <${process.env.EMAIL_USER}>`, 
+            to: process.env.EMAIL_USER,
+            replyTo: email,
+            subject: `[Assistance MyBudget] Nouveau ticket de ${nom}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
+                    <h2 style="color: #2563eb;">Nouveau message de support</h2>
+                    <p><strong>Nom :</strong> ${nom}</p>
+                    <p><strong>Email :</strong> <a href="mailto:${email}">${email}</a></p>
+                    <p><strong>Téléphone :</strong> ${telephone || 'Non renseigné'}</p>
+                    <h3 style="color: #334155; margin-top: 20px;">Message :</h3>
+                    <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; white-space: pre-wrap;">${message}</div>
+                </div>
+            `
+        });
+
+        res.json({ message: "Message envoyé avec succès." });
+    } catch (erreur) {
+        console.error("Erreur d'envoi de l'email de support :", erreur);
+        res.status(500).json({ message: "Erreur serveur lors de l'envoi." });
+    }
+};
+
+module.exports = { 
+    getProfilUtilisateur, 
+    updateProfilUtilisateur, 
+    supprimerCompte, 
+    motDePasseOublie, 
+    reinitialiserMotDePasse,
+    envoyerMessageSupport 
+};
