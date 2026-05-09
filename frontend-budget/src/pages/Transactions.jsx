@@ -215,7 +215,7 @@ function Transactions() {
               
               {/* === FORMULAIRE D'AJOUT (Gauche) === */}
               <div className="lg:col-span-5 flex flex-col min-h-0">
-                <div className="bg-white dark:bg-slate-800 p-6 xl:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex-1 flex flex-col relative z-20">
+                <div className="bg-white dark:bg-slate-800 p-6 xl:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex-1 flex flex-col relative z-20 overflow-y-auto custom-scrollbar ">
                   
                   <div className="flex justify-between items-center mb-4 shrink-0">
                     <h2 className="text-xl font-bold text-slate-700 dark:text-slate-200">{t('transactions.newTitle', 'Nouvelle transaction')}</h2>
