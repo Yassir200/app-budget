@@ -215,7 +215,7 @@ function Transactions() {
               
               {/* === FORMULAIRE D'AJOUT (Gauche) === */}
               <div className="lg:col-span-5 flex flex-col min-h-0">
-                <div className="bg-white dark:bg-slate-800 p-6 xl:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex-1 flex flex-col relative z-20">
+                <div className="bg-white dark:bg-slate-800 p-6 xl:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex-1 flex flex-col relative z-20 overflow-y-auto custom-scrollbar">
                   
                   <div className="flex justify-between items-center mb-4 shrink-0">
                     <h2 className="text-xl font-bold text-slate-700 dark:text-slate-200">{t('transactions.newTitle', 'Nouvelle transaction')}</h2>
@@ -306,7 +306,6 @@ function Transactions() {
 
                     <div>
                       <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">{t('transactions.descLabel', 'Description')}</label>
-                      {/* 💡 CORRECTIONS APPORTÉES ICI : h-24, custom-scrollbar, break-all */}
                       <textarea 
                         placeholder={t('transactions.descPlaceholder', 'Ajoutez des détails')} 
                         className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition resize-none h-24 text-slate-800 dark:text-white text-sm custom-scrollbar break-all" 
@@ -457,7 +456,6 @@ function Transactions() {
 
                 <div>
                   <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">{t('transactions.descLabel', 'Description')}</label>
-                  {/* 💡 CORRECTIONS APPORTÉES ICI AUSSI : h-24, custom-scrollbar, break-all */}
                   <textarea 
                     className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition resize-none h-24 text-slate-800 dark:text-white text-sm custom-scrollbar break-all" 
                     value={editingTx.description} 
