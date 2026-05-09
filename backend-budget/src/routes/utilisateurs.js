@@ -70,7 +70,8 @@ router.post('/avatar', verifierToken, upload.single('avatar'), async (req, res) 
             return res.status(400).json({ message: "Aucune image fournie." });
         }
         
-        const avatarUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+       const baseUrl = process.env.BACKEND_URL || 'http://localhost:3000';
+        const avatarUrl = `${baseUrl}/uploads/${req.file.filename}`;
         
         await Utilisateur.findByIdAndUpdate(req.utilisateur.id, { avatar: avatarUrl });
         res.status(200).json({ message: "Avatar mis à jour", avatarUrl: avatarUrl });
