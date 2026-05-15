@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import BottomNav from '../components/BottomNav'; // 👈 1. IMPORT DE LA BOTTOM NAV
 import { Globe, ChevronDown, Sun, Moon, Save, Lock, AlertTriangle, User as UserIcon, Eye, EyeOff, LogOut, LifeBuoy, Camera } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -218,7 +219,9 @@ function Profile() {
   return (
     <div className="h-screen overflow-hidden bg-[#f4f7fb] dark:bg-slate-900 flex font-sans transition-colors duration-300">
       <Sidebar />
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
+      
+      {/* 👈 2. AJOUT DE pb-16 lg:pb-0 ICI */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden relative pb-16 lg:pb-0">
         <header className="h-20 shrink-0 px-8 flex justify-between items-center bg-[#f4f7fb] dark:bg-slate-900">
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{t('profile.title', 'Mon Profil')}</h1>
           <div className="flex items-center gap-3">
@@ -245,12 +248,12 @@ function Profile() {
           </div>
         </header>
 
-        <div className="flex-1 px-8 pb-12 overflow-y-auto custom-scrollbar">
+        <div className="flex-1 px-4 sm:px-8 pb-12 overflow-y-auto custom-scrollbar">
           <div className="max-w-[1400px] mx-auto mt-4">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
               
               {/* 1. INFORMATIONS PERSONNELLES */}
-              <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-all flex flex-col">
+              <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-all flex flex-col">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="relative group cursor-pointer rounded-full shrink-0" onClick={() => document.getElementById('avatar-upload').click()}>
                     <img src={utilisateur.avatar || `https://ui-avatars.com/api/?name=${utilisateur.nom.replace(' ', '+')}&background=eff6ff&color=2563eb&bold=true`} alt="Avatar" className="w-16 h-16 rounded-full object-cover border-4 border-blue-50 dark:border-slate-700/50 group-hover:opacity-70 transition-opacity shadow-sm" />
@@ -276,7 +279,7 @@ function Profile() {
                   </div>
                   <div className="mt-auto pt-8 flex justify-end">
                     <div className="w-full border-t border-slate-100 dark:border-slate-700/50 pt-6 flex justify-end">
-                        <button type="submit" disabled={utilisateur.nom === utilisateurInitial.nom && utilisateur.email === utilisateurInitial.email} className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg disabled:opacity-50">
+                        <button type="submit" disabled={utilisateur.nom === utilisateurInitial.nom && utilisateur.email === utilisateurInitial.email} className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg disabled:opacity-50">
                         <Save size={18} /> {t('profile.saveBtn', 'Enregistrer')}
                         </button>
                     </div>
@@ -285,7 +288,7 @@ function Profile() {
               </div>
 
               {/* 2. SÉCURITÉ */}
-              <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-all flex flex-col">
+              <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-all flex flex-col">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="p-3 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-2xl"><Lock size={24} /></div>
                   <h2 className="text-xl font-bold text-slate-800 dark:text-white">{t('profile.security', 'Sécurité')}</h2>
@@ -321,7 +324,7 @@ function Profile() {
                   </div>
                   <div className="mt-auto pt-8 flex justify-end">
                     <div className="w-full border-t border-slate-100 dark:border-slate-700/50 pt-6 flex justify-end">
-                        <button type="submit" disabled={!motsDePasse.actuel || !motsDePasse.nouveau || motsDePasse.nouveau !== motsDePasse.confirmer} className="flex items-center gap-2 px-8 py-3 bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-xl hover:bg-slate-900 dark:hover:bg-slate-600 transition-all shadow-lg disabled:opacity-50">
+                        <button type="submit" disabled={!motsDePasse.actuel || !motsDePasse.nouveau || motsDePasse.nouveau !== motsDePasse.confirmer} className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3 bg-slate-800 dark:bg-slate-700 text-white font-bold rounded-xl hover:bg-slate-900 dark:hover:bg-slate-600 transition-all shadow-lg disabled:opacity-50">
                         <Save size={18} /> {t('profile.updateBtn', 'Mettre à jour')}
                         </button>
                     </div>
@@ -331,47 +334,48 @@ function Profile() {
 
               {/* 3. ACTIONS RAPIDES */}
               <div className="xl:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
-                  <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex items-center justify-between transition-all">
+                  <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between transition-all gap-4">
                     <div className="flex items-center gap-4">
                       <div className="p-3 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-2xl">
                         <LifeBuoy size={24} />
                       </div>
                       <div>
                         <h3 className="font-bold text-slate-800 dark:text-white">{t('profile.support', 'Support & Assistance')}</h3>
-                        
                       </div>
                     </div>
-                    <button onClick={() => navigate('/Support')} className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl transition-all">{t('profile.contactBtn', 'Contacter')}</button>
+                    <button onClick={() => navigate('/Support')} className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold rounded-xl transition-all">{t('profile.contactBtn', 'Contacter')}</button>
                   </div>
-                  <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex items-center justify-between transition-all">
+                  <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between transition-all gap-4">
                     <div className="flex items-center gap-4">
                       <div className="p-3 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 rounded-2xl">
                         <LogOut size={24} />
                       </div>
                       <div>
                         <h3 className="font-bold text-slate-800 dark:text-white">{t('profile.logout', 'Déconnexion')}</h3>
-                        
                       </div>
                     </div>
-                    <button onClick={handleLogout} className="px-5 py-2.5 bg-slate-100 hover:bg-rose-50 dark:bg-slate-700 dark:hover:bg-rose-500/20 text-slate-700 hover:text-rose-600 dark:text-slate-200 dark:hover:text-rose-400 font-bold rounded-xl transition-all">{t('profile.quitBtn', 'Quitter')}</button>
+                    <button onClick={handleLogout} className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-rose-50 dark:bg-slate-700 dark:hover:bg-rose-500/20 text-slate-700 hover:text-rose-600 dark:text-slate-200 dark:hover:text-rose-400 font-bold rounded-xl transition-all">{t('profile.quitBtn', 'Quitter')}</button>
                   </div>
               </div>
                 
               {/* 4. ZONE DE DANGER */}
-              <div className="xl:col-span-2 bg-rose-50 dark:bg-rose-500/10 p-8 rounded-[2rem] border border-rose-200 dark:border-rose-500/20 transition-all">
-                <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="xl:col-span-2 bg-rose-50 dark:bg-rose-500/10 p-6 sm:p-8 rounded-[2rem] border border-rose-200 dark:border-rose-500/20 transition-all">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between flex-wrap gap-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2 text-rose-600 dark:text-rose-500">
                       <AlertTriangle size={28} /> 
                     </div>
                     <p className="text-slate-600 dark:text-slate-400 text-sm">{t('profile.deleteWarning', 'La suppression est irréversible et effacera toutes vos données.')}</p>
                   </div>
-                  <button onClick={handleDeleteAccount} className="px-6 py-3 bg-rose-600 text-white font-bold rounded-xl hover:bg-rose-700 transition-all shadow-lg whitespace-nowrap">{t('profile.deleteAccountBtn', 'Supprimer mon compte')}</button>
+                  <button onClick={handleDeleteAccount} className="w-full sm:w-auto px-6 py-3 bg-rose-600 text-white font-bold rounded-xl hover:bg-rose-700 transition-all shadow-lg whitespace-nowrap">{t('profile.deleteAccountBtn', 'Supprimer mon compte')}</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* 👈 3. AJOUT DE LA BOTTOM NAV ICI */}
+        <BottomNav />
       </div>
     </div>
   );
