@@ -100,8 +100,7 @@ const motDePasseOublie = async (req, res) => {
         if (!utilisateur.isVerified) return res.status(403).json({ message: "Ce compte n'a pas encore été vérifié." });
 
         const resetToken = jwt.sign({ id: utilisateur._id }, process.env.JWT_SECRET, { expiresIn: '15m' });
-        const resetUrl = `http://localhost:5173/ResetPassword/${resetToken}`;
-
+        const resetUrl = `https://monbudget.dev/ResetPassword/${resetToken}`;
         const transporter = nodemailer.createTransport({
             host: 'smtp.zoho.com', port: 465, secure: true, 
             auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
