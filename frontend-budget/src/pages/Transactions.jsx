@@ -9,6 +9,7 @@ import {
   Heart, Gamepad2, Home, Utensils, GraduationCap, Bus, ShoppingCart, Users, Dumbbell, Shirt, Apple, Briefcase, Coffee, Plane, FileText, Car, Train, Ship, Bike, Fuel, Pizza, Croissant, Beer, Wine, Tv, Film, Music, Ticket, Smartphone, Laptop, Monitor, Mouse, Sofa, Bed, Bath, Lightbulb, Stethoscope, Syringe, Pill, Baby, Cat, Dog, CreditCard, Coins, Landmark, PiggyBank, Receipt, Gift, Scissors, Wrench, Umbrella, Globe
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import BottomNav from '../components/BottomNav'; // 👈 IMPORT
 
 const ICON_MAP = {
   Heart, Gamepad2, Home, Utensils, GraduationCap, Bus, ShoppingCart, Users, Dumbbell, Shirt, Apple, Briefcase, Coffee, Plane, FileText, Wallet, Car, Train, Ship, Bike, Fuel, Pizza, Croissant, Beer, Wine, Tv, Film, Music, Mic, Ticket, Smartphone, Laptop, Monitor, Mouse, Sofa, Bed, Bath, Lightbulb, Stethoscope, Syringe, Pill, Baby, Cat, Dog, CreditCard, Coins, Landmark, PiggyBank, Receipt, Gift, Scissors, Wrench, Umbrella, Globe
@@ -27,11 +28,9 @@ function Transactions() {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // États pour la modale de modification
   const [editingTx, setEditingTx] = useState(null);
   const [isEditCategoryOpen, setIsEditCategoryOpen] = useState(false);
 
-  // Stocker la date d'aujourd'hui pour bloquer le futur
   const todayString = new Date().toISOString().split('T')[0];
 
   const [formData, setFormData] = useState(() => {
@@ -78,7 +77,6 @@ function Transactions() {
     setEditingTx({ ...editingTx, date: date.toISOString().split('T')[0] });
   };
 
-  // --- AJOUTER ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus({ type: '', message: '' });
@@ -101,7 +99,6 @@ function Transactions() {
     }
   };
 
-  // --- MODIFIER ---
   const handleEditClick = (tx) => {
     setEditingTx({
       ...tx,
@@ -132,7 +129,6 @@ function Transactions() {
     }
   };
 
-  // --- SUPPRIMER ---
   const handleDelete = (id) => {
     const isDark = document.documentElement.classList.contains('dark');
     
@@ -204,16 +200,16 @@ function Transactions() {
       <div className="h-screen overflow-hidden bg-[#f4f7fb] dark:bg-slate-900 flex font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
         <Sidebar />
         
-        <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+        {/* 💡 AJOUT DE pb-16 lg:pb-0 POUR LA BOTTOM NAV */}
+        <div className="flex-1 flex flex-col h-full overflow-hidden relative pb-16 lg:pb-0">
           <header className="h-20 shrink-0 bg-[#f4f7fb] dark:bg-slate-900 px-8 flex justify-between items-center">
             <h1 className="text-2xl font-bold">{t('transactions.pageTitle', 'Saisie des transactions')}</h1>
           </header>
 
-          <div className="flex-1 px-8 pb-8 max-w-[1600px] w-full mx-auto overflow-hidden flex flex-col min-h-0">
+          <div className="flex-1 px-4 sm:px-8 pb-8 max-w-[1600px] w-full mx-auto overflow-hidden flex flex-col min-h-0">
             
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0">
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 overflow-y-auto lg:overflow-hidden custom-scrollbar">
               
-              {/* === FORMULAIRE D'AJOUT (Gauche) === */}
               <div className="lg:col-span-5 flex flex-col min-h-0">
                 <div className="bg-white dark:bg-slate-800 p-6 xl:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex-1 flex flex-col relative z-20 overflow-y-auto custom-scrollbar ">
                   
@@ -253,7 +249,7 @@ function Transactions() {
                         <div className="flex-1 bg-slate-50 dark:bg-slate-700/50 p-1 rounded-xl flex gap-1 border border-slate-200 dark:border-slate-600">
                           <button type="button" onClick={() => setQuickDate(0)} className={`flex-1 py-1.5 rounded-lg text-sm font-bold transition ${formData.date === todayString ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600'}`}>{t('transactions.todayBtn', 'Auj.')}</button>
                           <button type="button" onClick={() => setQuickDate(1)} className={`flex-1 py-1.5 rounded-lg text-sm font-bold transition ${formData.date === new Date(Date.now() - 86400000).toISOString().split('T')[0] ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600'}`}>{t('transactions.yesterdayBtn', 'Hier')}</button>
-                          <button type="button" onClick={() => setQuickDate(2)} className={`flex-1 py-1.5 rounded-lg text-sm font-bold transition ${formData.date === new Date(Date.now() - 172800000).toISOString().split('T')[0] ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600'}`}>{t('transactions.twoDaysBtn', '-2 Jours')}</button>
+                          <button type="button" onClick={() => setQuickDate(2)} className={`hidden sm:block flex-1 py-1.5 rounded-lg text-sm font-bold transition ${formData.date === new Date(Date.now() - 172800000).toISOString().split('T')[0] ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600'}`}>{t('transactions.twoDaysBtn', '-2 Jours')}</button>
                         </div>
                         <input type="date" required max={todayString} className="px-3 py-1.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl outline-none text-sm cursor-pointer" value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
                       </div>
@@ -306,7 +302,6 @@ function Transactions() {
 
                     <div>
                       <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">{t('transactions.descLabel', 'Description')}</label>
-                      {/* 💡 CORRECTIONS APPORTÉES ICI : h-24, custom-scrollbar, break-all */}
                       <textarea 
                         placeholder={t('transactions.descPlaceholder', 'Ajoutez des détails')} 
                         className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition resize-none h-24 text-slate-800 dark:text-white text-sm custom-scrollbar break-all" 
@@ -315,26 +310,25 @@ function Transactions() {
                       />
                     </div>
 
-                    <button type="submit" className="mt-auto w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg text-sm">
+                    <button type="submit" className="mt-auto w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg text-sm mt-4 lg:mt-0">
                       {t('transactions.addBtn', 'Ajouter')} {formData.montant ? `${formData.montant} DH` : ''}
                     </button>
                   </form>
                 </div>
               </div>
 
-              {/* === HISTORIQUE DES TRANSACTIONS (Droite) === */}
               <div className="lg:col-span-7 flex flex-col min-h-0">
-                <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex-1 flex flex-col min-h-0 relative z-10">
+                <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex-1 flex flex-col min-h-0 relative z-10 mt-6 lg:mt-0">
                   
-                  <div className="flex justify-between items-center mb-8 gap-4 shrink-0">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 shrink-0">
                     <h2 className="text-xl font-bold text-slate-700 dark:text-slate-200">{t('transactions.history', 'Historique Complet')}</h2>
-                    <div className="relative w-64">
+                    <div className="relative w-full sm:w-64">
                       <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input type="text" placeholder={t('transactions.search', 'Chercher...')} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition" />
                     </div>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar space-y-2.5">
+                  <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar space-y-2.5 min-h-[300px] lg:min-h-0">
                     {filteredTransactions.map((tx) => (
                       <div key={tx._id} className="flex flex-col px-4 py-3.5 border border-slate-100 dark:border-slate-700/50 hover:border-blue-200 rounded-xl transition group bg-white dark:bg-slate-800">
                         
@@ -352,11 +346,11 @@ function Transactions() {
                           <div className="flex items-center gap-2 shrink-0">
                             <span className={`text-base font-bold mr-1 ${tx.type === 'revenu' ? 'text-emerald-500' : 'text-rose-600'}`}>{tx.type === 'revenu' ? '+' : '-'}{formatDevise(tx.montant)}</span>
                             
-                            <button onClick={() => handleEditClick(tx)} className="text-slate-300 hover:text-blue-500 transition opacity-0 group-hover:opacity-100 p-1.5" title="Modifier">
+                            <button onClick={() => handleEditClick(tx)} className="text-slate-300 hover:text-blue-500 transition lg:opacity-0 group-hover:opacity-100 p-1.5" title="Modifier">
                               <Pencil size={16} />
                             </button>
 
-                            <button onClick={() => handleDelete(tx._id)} className="text-slate-300 hover:text-rose-500 transition opacity-0 group-hover:opacity-100 p-1.5" title="Supprimer">
+                            <button onClick={() => handleDelete(tx._id)} className="text-slate-300 hover:text-rose-500 transition lg:opacity-0 group-hover:opacity-100 p-1.5" title="Supprimer">
                               <Trash2 size={16} />
                             </button>
                           </div>
@@ -379,6 +373,9 @@ function Transactions() {
 
             </div>
           </div>
+          
+          {/* 💡 AJOUT DE BOTTOM NAV */}
+          <BottomNav />
         </div>
       </div>
 
@@ -457,7 +454,6 @@ function Transactions() {
 
                 <div>
                   <label className="block text-[11px] font-bold text-slate-400 uppercase mb-1.5">{t('transactions.descLabel', 'Description')}</label>
-                  {/* 💡 CORRECTIONS APPORTÉES ICI AUSSI : h-24, custom-scrollbar, break-all */}
                   <textarea 
                     className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition resize-none h-24 text-slate-800 dark:text-white text-sm custom-scrollbar break-all" 
                     value={editingTx.description} 

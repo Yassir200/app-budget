@@ -16,6 +16,7 @@ import {
   Gift, Scissors, Wrench, Umbrella, Globe
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
+import BottomNav from '../components/BottomNav'; // 👈 IMPORT
 
 const ICON_MAP = {
   Heart, Gamepad2, Home, Utensils, GraduationCap, Bus, 
@@ -145,14 +146,14 @@ function Categories() {
     <div className="h-screen overflow-hidden bg-[#f4f7fb] dark:bg-slate-900 flex font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
+      {/* 💡 AJOUT DE pb-16 lg:pb-0 POUR L'ESPACE BOTTOM NAV */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden pb-16 lg:pb-0">
         
-        {/* 💡 HEADER EPURÉ (Sans boutons langue ni thème) */}
         <header className="h-20 shrink-0 bg-[#f4f7fb] dark:bg-slate-900 px-8 flex justify-between items-center transition-colors duration-300">
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{t('categories.pageTitle', 'Paramètres des Catégories')}</h1>
         </header>
 
-        <div className="flex-1 px-8 pb-8 max-w-[1600px] w-full mx-auto overflow-hidden flex flex-col min-h-0">
+        <div className="flex-1 px-4 sm:px-8 pb-8 max-w-[1600px] w-full mx-auto overflow-hidden flex flex-col min-h-0">
           {status.message && (
             <div className={`shrink-0 flex items-center gap-2 p-4 rounded-xl mb-6 text-sm font-medium ${status.type === 'success' ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400'}`}>
               {status.type === 'success' ? <CheckCircle2 size={18}/> : <AlertCircle size={18}/>}
@@ -160,11 +161,10 @@ function Categories() {
             </div>
           )}
 
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-0">
-            {/* ajout de categorie */}
-            <div className="lg:col-span-1 flex flex-col min-h-0 gap-6">
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-0 overflow-y-auto lg:overflow-hidden custom-scrollbar">
+            <div className="lg:col-span-1 flex flex-col min-h-0 gap-6 mt-2 lg:mt-0">
               {uiMode === 'presets' ? (
-                <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors flex-1 flex flex-col min-h-0">
+                <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors flex-1 flex flex-col min-h-[300px] lg:min-h-0">
                   <h2 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-6 shrink-0">{t('categories.quickAdd', 'Ajouter rapidement')}</h2>
                   <div className="flex-1 grid grid-cols-3 gap-y-6 gap-x-4 overflow-y-auto pr-2 custom-scrollbar min-h-0">
                     {PRESET_CATEGORIES.map((preset) => (
@@ -222,9 +222,8 @@ function Categories() {
               )}
             </div>
 
-            {/* liste des categories existantes */}
             <div className="lg:col-span-2 flex flex-col min-h-0">
-              <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex-1 flex flex-col min-h-0 transition-colors">
+              <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 flex-1 flex flex-col min-h-[300px] lg:min-h-0 transition-colors">
                 <div className="flex justify-between items-center mb-6 shrink-0">
                   <h2 className="text-xl font-bold text-slate-700 dark:text-slate-200">{t('categories.yourCategories', 'Vos Catégories')}</h2>
                   <span className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full text-xs font-bold">{categories.length} {t('categories.total', 'total')}</span>
@@ -242,7 +241,7 @@ function Categories() {
                             <p className="text-xs font-mono text-slate-400 dark:text-slate-500 uppercase">{cat.couleur}</p>
                           </div>
                         </div>
-                        <button onClick={() => handleDelete(cat._id)} className="text-slate-300 dark:text-slate-600 hover:text-rose-500 dark:hover:text-rose-400 transition p-2 bg-slate-50 dark:bg-slate-700 hover:bg-rose-50 dark:hover:bg-slate-600 rounded-xl opacity-0 group-hover:opacity-100" title="Supprimer">
+                        <button onClick={() => handleDelete(cat._id)} className="text-slate-300 dark:text-slate-600 hover:text-rose-500 dark:hover:text-rose-400 transition p-2 bg-slate-50 dark:bg-slate-700 hover:bg-rose-50 dark:hover:bg-slate-600 rounded-xl lg:opacity-0 group-hover:opacity-100" title="Supprimer">
                           <Trash2 size={18} />
                         </button>
                       </div>
@@ -260,6 +259,9 @@ function Categories() {
             </div>
           </div>
         </div>
+        
+        {/* 💡 AJOUT DE BOTTOM NAV */}
+        <BottomNav />
       </div>
     </div>
   );

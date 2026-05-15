@@ -6,6 +6,7 @@ import { LayoutDashboard, Tag, Wallet, PlusCircle, ArrowDownRight, ArrowUpRight,
 import api from '../services/api';
 import Sidebar from '../components/Sidebar';
 import WelcomeOnboarding from '../components/WelcomeOnboarding';
+import BottomNav from '../components/BottomNav'; // 👈 IMPORT
 import { useTheme } from '../context/ThemeContext';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -32,7 +33,6 @@ function Dashboard() {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   });
 
-  // --- UI State pour le Language Switcher (FR / EN uniquement) ---
   const [isLangOpen, setIsLangOpen] = useState(false);
   const languages = [
     { code: 'fr', label: 'Français', flag: 'FR' },
@@ -58,9 +58,8 @@ function Dashboard() {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
       .format(montant).replace('$', '') + ' MAD';
   };
-  // 👇 NOUVELLE FONCTION À AJOUTER ICI 👇
+
   const formatDeviseCompact = (montant) => {
-    // Si le montant dépasse 100 000, on utilise le format compact (K, M, B, T)
     if (Math.abs(montant) >= 100000) {
       return new Intl.NumberFormat('en-US', { 
         notation: "compact", 
@@ -68,7 +67,7 @@ function Dashboard() {
         maximumFractionDigits: 1 
       }).format(montant) + ' MAD';
     }
-    return formatDevise(montant); // Sinon on garde l'affichage normal
+    return formatDevise(montant);
   };
 
   const formaterDateCourte = (dateString) => {
@@ -228,7 +227,8 @@ function Dashboard() {
       <div className="h-screen overflow-hidden bg-[#f4f7fb] dark:bg-slate-900 flex font-sans text-slate-800 dark:text-slate-100 transition-colors duration-300">
         <Sidebar />
 
-        <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* 💡 AJOUT DE pb-16 lg:pb-0 POUR L'ESPACE BOTTOM NAV */}
+        <div className="flex-1 flex flex-col h-full overflow-hidden pb-16 lg:pb-0">
           <header className="h-20 shrink-0 px-8 flex justify-between items-center bg-[#f4f7fb] dark:bg-slate-900 transition-colors duration-300">
             
             <div className="flex items-center gap-4">
@@ -237,49 +237,43 @@ function Dashboard() {
               </button>
 
               <div className="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden transition-colors">
-                <div className="px-3 border-r border-slate-200 dark:border-slate-700">
+                <div className="hidden sm:block px-3 border-r border-slate-200 dark:border-slate-700">
                   <input type="month" value={reportMonth} onChange={(e) => setReportMonth(e.target.value)} className="bg-transparent border-none text-sm font-bold text-slate-700 dark:text-slate-200 outline-none py-2 cursor-pointer" />
                 </div>
                 <button onClick={genererRapportMensuel} className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold text-sm transition-colors" title="Générer le rapport">
-                  <Download size={16} /> Rapport
+                  <Download size={16} /> <span className="hidden sm:inline">Rapport</span>
                 </button>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              
-              
-
-              {/* 🌙 DARK MODE TOGGLE */}
               <div onClick={toggleDarkMode} className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-bold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm">
                 <span className="text-sm hidden sm:block">{t('header.darkMode', 'Mode Sombre')}</span>
                 {isDarkMode ? <Sun size={18} className="text-amber-500" /> : <Moon size={18} className="text-indigo-500" />}
               </div>
-
             </div>
           </header>
 
-          <div className="flex-1 px-8 pb-6 max-w-[1600px] w-full mx-auto overflow-hidden flex flex-col min-h-0">
+          <div className="flex-1 px-4 sm:px-8 pb-6 max-w-[1600px] w-full mx-auto overflow-hidden flex flex-col min-h-0">
             <div className="shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors duration-300">
-              <div className="flex gap-1 overflow-x-auto w-full md:w-auto p-1">
+              <div className="flex gap-1 overflow-x-auto w-full md:w-auto p-1 custom-scrollbar">
                 {['day', 'week', 'month', 'year', 'all'].map((filter) => {
-                  // 💡 CORRECTION DU BUG ICI : 'day' pointe vers la clé 'today' du JSON
                   const jsonKey = filter === 'day' ? 'today' : filter;
                   const fallbackTxt = filter === 'day' ? "Aujourd'hui" : filter === 'week' ? 'Semaine' : filter === 'month' ? 'Ce mois' : filter === 'year' ? 'Cette année' : 'Tout';
                   
                   return (
-                    <button key={filter} onClick={() => { setTimeFilter(filter); setShowCustomPicker(false); }} className={`px-4 py-2 rounded-xl text-sm font-bold capitalize transition-all ${timeFilter === filter ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'}`}>
+                    <button key={filter} onClick={() => { setTimeFilter(filter); setShowCustomPicker(false); }} className={`px-4 py-2 rounded-xl text-sm font-bold capitalize transition-all whitespace-nowrap ${timeFilter === filter ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'}`}>
                       {t(`filters.${jsonKey}`, fallbackTxt)} 
                     </button>
                   )
                 })}
-                <button onClick={() => { setTimeFilter('custom'); setShowCustomPicker(true); }} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${timeFilter === 'custom' ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'}`}>
+                <button onClick={() => { setTimeFilter('custom'); setShowCustomPicker(true); }} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap ${timeFilter === 'custom' ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-md' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'}`}>
                   <Calendar size={16} /> {t('filters.custom', 'Personnalisée')}
                 </button>
               </div>
 
               {showCustomPicker && (
-                <div className="flex items-center gap-3 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 rounded-xl animate-fade-in transition-colors">
+                <div className="flex flex-wrap items-center gap-3 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800/50 rounded-xl animate-fade-in transition-colors w-full md:w-auto">
                   <span className="text-sm font-bold text-indigo-800 dark:text-indigo-300">Du:</span>
                   <input type="date" value={customDates.start} onChange={(e) => setCustomDates({ ...customDates, start: e.target.value })} className="bg-white dark:bg-slate-700 border-none rounded-lg px-2 py-1 text-sm outline-none text-slate-700 dark:text-slate-200 shadow-sm" />
                   <span className="text-sm font-bold text-indigo-800 dark:text-indigo-300 ml-2">Au:</span>
@@ -288,9 +282,8 @@ function Dashboard() {
               )}
             </div>
 
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0 overflow-y-auto lg:overflow-hidden custom-scrollbar pb-10 lg:pb-0">
               
-              {/* stats revenus */}
               <div className="flex flex-col gap-4 min-h-0">
                 <div className="shrink-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
                   <div className="flex justify-between items-center mb-4">
@@ -305,7 +298,6 @@ function Dashboard() {
                   </div>
                 </div>
 
-                {/* DETAILS REVENUS */}
                 <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
                   <div className="shrink-0 flex justify-between items-center mb-4"><h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.incomeDetails', 'Détails Revenus')}</h3></div>
                   <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-4">
@@ -323,7 +315,6 @@ function Dashboard() {
                 </div>
               </div>
 
-              {/* stats depenses */}
               <div className="flex flex-col gap-4 min-h-0">
                 <div className="shrink-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
                   <div className="flex justify-between items-center mb-4">
@@ -338,7 +329,6 @@ function Dashboard() {
                   </div>
                 </div>
 
-                {/* DETAILS DEPENSES */}
                 <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-800 p-5 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700/50 transition-colors">
                   <div className="shrink-0 flex justify-between items-center mb-4"><h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.expensesDetails', 'Détails Dépenses')}</h3></div>
                   <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-4">
@@ -356,7 +346,6 @@ function Dashboard() {
                 </div>
               </div>
 
-              {/* solde global et liste des transactions */}
               <div className="flex flex-col gap-4 min-h-0">
                 <div className="shrink-0 grid grid-cols-2 gap-3">
                   <div className="bg-gradient-to-br from-rose-400 to-rose-500 p-4 rounded-3xl text-white shadow-md shadow-rose-200 dark:shadow-none">
@@ -378,7 +367,7 @@ function Dashboard() {
                     <h3 className="font-bold text-slate-700 dark:text-slate-200">{t('dashboard.transactions', 'Transactions')}</h3>
                     <span onClick={() => navigate('/Transactions')} className="text-xs font-bold text-blue-500 dark:text-blue-400 cursor-pointer hover:underline">{t('dashboard.seeAll', 'Voir tout')}</span>
                   </div>
-                  <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-3">
+                  <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar space-y-3 min-h-[200px] lg:min-h-0">
                     {filteredTransactions.slice(0, 200).map((tx) => (
                       <div key={tx._id} className="flex justify-between items-center border-b border-slate-50 dark:border-slate-700/50 pb-2.5 last:border-0 last:pb-0">
                         <div>
@@ -397,6 +386,9 @@ function Dashboard() {
             </div>
           </div>
         </div>
+        
+        {/* 💡 AJOUT DE BOTTOM NAV */}
+        <BottomNav />
       </div>
     </>
   );
